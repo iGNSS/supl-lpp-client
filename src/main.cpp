@@ -1,13 +1,19 @@
 #include <lpp.h>
 #include <modem.h>
 #include <rtcm_generator.h>
-
 #include <arpa/inet.h>
 #include <fstream>
 #include <getopt.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <stdio.h>
+#include <termios.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <string.h>
 
 #define UNUSED [[maybe_unused]]
 #define SSR 0
@@ -47,6 +53,9 @@ struct Options {
     const char*  modem;
     unsigned int modem_baud_rate;
 };
+
+// Declare serial port to output corrections
+int serial_port = open("/dev/ttyAMA0", O_RDWR);
 
 Options parse_arguments(int argc, char* argv[]) {
     Options options{};
@@ -150,6 +159,23 @@ int  main(int argc, char* argv[]) {
             printf("Connect to OUTPUT server\n");
         }
     }
+
+    // Check for errors
+    if (serial_port < 0) {
+        printf("Error %i from open: %s\n", errno, strerror(errno));
+    }
+
+    struct termios tios;
+    tcgetattr(serial_port, &tios);
+    // Disable flow control, and ignore break and parity errors
+    tios.c_iflag = IGNBRK | IGNPAR;
+    tios.c_oflag = 0;
+    tios.c_lflag = 0;
+    cfsetspeed(&tios, B9600);
+    tcsetattr(serial_port, TCSAFLUSH, &tios);
+
+    // The serial port has a brief glitch once we turn it on which generates a start bit; sleep for 1ms to let it settle
+    usleep(1000);
 
     // Initialize OpenSSL
     network_initialize();
@@ -316,6 +342,10 @@ void assistance_data_callback(LPP_Client*, LPP_Transaction*, LPP_Message* messag
             rtcm_file.write((char*)buffer, length);
             rtcm_file.flush();
         }
+
+        // Output to serial port
+        write(serial_port, (char*)buffer, length);
+
 
         if (connected == 0) {
             auto result = write(sockfd, buffer, length);
