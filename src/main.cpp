@@ -29,6 +29,7 @@ static struct option long_options[] = {
     {"server_ip", required_argument, NULL, 'k'},
     {"server_port", required_argument, NULL, 'o'},
     {"file_output", required_argument, NULL, 'x'},
+    {"serial_port", required_argument, NULL, 'd'},
     {"modem_device", required_argument, NULL, 'm'},
     {"modem_baud_rate", required_argument, NULL, 'b'},
     {"ssl", no_argument, NULL, 's'},
@@ -50,6 +51,7 @@ struct Options {
     int         server_port;
 
     const char*  file_output;
+    const char*  serial_port;
     const char*  modem;
     unsigned int modem_baud_rate;
 };
@@ -77,7 +79,7 @@ Options parse_arguments(int argc, char* argv[]) {
 
     int c;
     int option_index;
-    while ((c = getopt_long(argc, argv, "h:p:c:n:i:t:u:k:o:m:b:y:", long_options, &option_index)) !=
+    while ((c = getopt_long(argc, argv, "h:p:sc:n:i:t:y:k:o:x:d:m:b:", long_options, &option_index)) !=
            -1) {
         switch (c) {
         case 'h': options.host = strdup(optarg); break;
@@ -94,9 +96,11 @@ Options parse_arguments(int argc, char* argv[]) {
         case 'o': options.server_port = atoi(optarg); break;
 
         case 'x': options.file_output = strdup(optarg); break;
+        case 'd': options.serial_port = strdup(optarg); break;
         case 'm': options.modem = strdup(optarg); break;
         case 'b': options.modem_baud_rate = atoi(optarg); break;
-        default: printf("ERROR: Unknown argument %c\n", c);
+        default:
+            abort ();
         }
     }
 
