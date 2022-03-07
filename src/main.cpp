@@ -171,7 +171,7 @@ int  main(int argc, char* argv[]) {
     tios.c_iflag = IGNBRK | IGNPAR;
     tios.c_oflag = 0;
     tios.c_lflag = 0;
-    cfsetspeed(&tios, B9600);
+    cfsetspeed(&tios, B38400);
     tcsetattr(serial_port, TCSAFLUSH, &tios);
 
     // The serial port has a brief glitch once we turn it on which generates a start bit; sleep for 1ms to let it settle
