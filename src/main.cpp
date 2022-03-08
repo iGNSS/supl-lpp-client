@@ -111,6 +111,7 @@ Options parse_arguments(int argc, char* argv[]) {
 }
 
 int           connected = -1;
+int           streaming = -1;
 int           sockfd;
 std::ofstream rtcm_file;
 RTCMGenerator generator;
@@ -147,6 +148,9 @@ int main(int argc, char* argv[]) {
             return 1;
         }
 
+        // Set flag to indicate streaming to serial port
+        streaming = 1;
+
         struct termios tios;
         tcgetattr(device, &tios);
 
@@ -154,6 +158,11 @@ int main(int argc, char* argv[]) {
         tios.c_iflag = IGNBRK | IGNPAR;
         tios.c_oflag = 0;
         tios.c_lflag = 0;
+
+        if (streaming < 0) {
+            printf("ERROR: Unable to connect to OUTPUT serial port.\n");
+            return 1;
+        }
 
         // Determine validity of baud rate
         printf("OUTPUT Baud Rate:   %li\n", options.serial_port_baud_rate);
@@ -372,9 +381,13 @@ void assistance_data_callback(LPP_Client*, LPP_Transaction*, LPP_Message* messag
             rtcm_file.flush();
         }
 
-        if (device > 0) {
         // Output to serial port
-            write(device, (char*)buffer, length);
+        if (device > 0) {
+            auto output = write(device, (char*)buffer, length);
+            // If an error occurs streaming to serial port, unset the streaming flag
+            if (output == -1) {
+                streaming = 0;
+            }
         }
 
         // Output to server
