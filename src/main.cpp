@@ -331,7 +331,7 @@ void assistance_data_callback(LPP_Client*, LPP_Transaction*, LPP_Message* messag
     auto          size   = sizeof(buffer);
     auto          length = generator.convert(buffer, &size, message, &generated_messages);
 
-    printf("length: %4zu | msm%i | ", length, generated_messages.msm);
+    printf("length: %4zu | msm%2i | ", length, generated_messages.msm);
     if (generated_messages.mt1074) printf("1074 ");
     if (generated_messages.mt1075) printf("1075 ");
     if (generated_messages.mt1076) printf("1076 ");
