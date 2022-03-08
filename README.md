@@ -79,7 +79,7 @@ Client takes the following options
 -i, --cellid                cell id, integer, defaults to 3
 -t, --tac                   tracking area code, integer, defaults to 1
 -y, --msm_type              msm type used for generation of RTCM messages, integer, default to -1 (best suitable)
--k, --server_ip             hostname or IP address for output server, string, defaults to 127.0.0.1
+-k, --server_ip             hostname or IP address for output server, string, defaults to ""
 -o, --server_port           port number for output server, integer, defaults to 3000
 -x, --file_output           file path output, string, defaults to "" (no file output)
 -d, --serial_port           serial port path output, string, defaults to "/dev/ttyAMA0"

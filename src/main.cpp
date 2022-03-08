@@ -65,7 +65,7 @@ Options parse_arguments(int argc, char* argv[]) {
     options.ssl      = false;
     options.msm_type = -1;
 
-    options.server_ip   = "127.0.0.1";
+    options.server_ip   = NULL;
     options.server_port = 3000;
 
     options.mcc     = 310;
