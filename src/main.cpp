@@ -113,6 +113,7 @@ RTCMGenerator generator;
 LPP_Client    client;
 CellID        cell;
 Modem_AT*     modem;
+int           device;
 
 bool provide_location_information_callback(LocationInformation* location, void* userdata);
 bool provide_ecid_callback(ECIDInformation* ecid, void* userdata);
@@ -130,6 +131,31 @@ int  main(int argc, char* argv[]) {
     printf("Location Server: %s:%d %s\n", options.host, options.port, options.ssl ? "[ssl]" : "");
     printf("Cell:            MCC=%ld, MNC=%ld, TAC=%ld, Id=%ld\n", cell.mcc, cell.mnc, cell.tac,
            cell.cell);
+
+    if (options.serial_port) {
+        // Open serial port
+        device = open(options.serial_port, O_RDWR);
+        printf("OUTPUT Serial Port: %s\n", options.serial_port);
+        if (device < 0) {
+            printf("ERROR: Opening serial port failed. %s.\n", strerror(errno));
+            return 1;
+        }
+
+        struct termios tios;
+        tcgetattr(device, &tios);
+
+        // Disable flow control, and ignore break and parity errors
+        tios.c_iflag = IGNBRK | IGNPAR;
+        tios.c_oflag = 0;
+        tios.c_lflag = 0;
+
+        // Set baud rate
+        cfsetspeed(&tios, B38400);
+        tcsetattr(device, TCSAFLUSH, &tios);
+
+        // The serial port has a brief glitch once we turn it on which generates a start bit; sleep for 1ms to let it settle
+        usleep(1000);
+    }
 
     if (options.file_output) {
         // Create output file
@@ -162,23 +188,6 @@ int  main(int argc, char* argv[]) {
             printf("Connect to OUTPUT server\n");
         }
     }
-
-    // Check for errors
-    if (serial_port < 0) {
-        printf("Error %i from open: %s\n", errno, strerror(errno));
-    }
-
-    struct termios tios;
-    tcgetattr(serial_port, &tios);
-    // Disable flow control, and ignore break and parity errors
-    tios.c_iflag = IGNBRK | IGNPAR;
-    tios.c_oflag = 0;
-    tios.c_lflag = 0;
-    cfsetspeed(&tios, B38400);
-    tcsetattr(serial_port, TCSAFLUSH, &tios);
-
-    // The serial port has a brief glitch once we turn it on which generates a start bit; sleep for 1ms to let it settle
-    usleep(1000);
 
     // Initialize OpenSSL
     network_initialize();
@@ -346,9 +355,10 @@ void assistance_data_callback(LPP_Client*, LPP_Transaction*, LPP_Message* messag
             rtcm_file.flush();
         }
 
+        if (device > 0) {
         // Output to serial port
-        write(serial_port, (char*)buffer, length);
-
+            write(device, (char*)buffer, length);
+        }
 
         if (connected == 0) {
             auto result = write(sockfd, buffer, length);
