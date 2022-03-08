@@ -56,9 +56,6 @@ struct Options {
     unsigned int modem_baud_rate;
 };
 
-// Declare serial port to output corrections
-int serial_port = open("/dev/ttyAMA0", O_RDWR);
-
 Options parse_arguments(int argc, char* argv[]) {
     Options options{};
     options.host     = "129.192.82.208";
@@ -76,6 +73,8 @@ Options parse_arguments(int argc, char* argv[]) {
 
     options.modem           = NULL;
     options.modem_baud_rate = 9600;
+
+    options.serial_port = "/dev/ttyAMA0";
 
     int c;
     int option_index;
