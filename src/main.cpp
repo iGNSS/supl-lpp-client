@@ -128,8 +128,8 @@ int  main(int argc, char* argv[]) {
         .cell = options.cell_id,
     };
 
-    printf("Location Server: %s:%d %s\n", options.host, options.port, options.ssl ? "[ssl]" : "");
-    printf("Cell:            MCC=%ld, MNC=%ld, TAC=%ld, Id=%ld\n", cell.mcc, cell.mnc, cell.tac,
+    printf("Location Server:    %s:%d %s\n", options.host, options.port, options.ssl ? "[ssl]" : "");
+    printf("Cell:               MCC=%ld, MNC=%ld, TAC=%ld, Id=%ld\n", cell.mcc, cell.mnc, cell.tac,
            cell.cell);
 
     if (options.serial_port) {
@@ -160,8 +160,9 @@ int  main(int argc, char* argv[]) {
     if (options.file_output) {
         // Create output file
         rtcm_file = std::ofstream{options.file_output};
+        printf("OUTPUT File:        %s\n", options.file_output);
         if (!rtcm_file.is_open()) {
-            printf("ERROR: Opening file output failed ... \n");
+            printf("ERROR: Opening file output failed.\n");
             return 1;
         }
     }
@@ -170,7 +171,7 @@ int  main(int argc, char* argv[]) {
         // Create output server
         sockfd = socket(AF_INET, SOCK_STREAM, 0);
         if (sockfd == -1) {
-            printf("ERROR: Socket creation for output failed ... \n");
+            printf("ERROR: Socket creation for output failed.\n");
             return 1;
         }
 
@@ -180,12 +181,12 @@ int  main(int argc, char* argv[]) {
         serveraddr.sin_addr.s_addr = inet_addr(options.server_ip);
         serveraddr.sin_port        = htons(options.server_port);
 
-        printf("OUTPUT Server:   %s:%d connecting...\n", options.server_ip, options.server_port);
+        printf("OUTPUT Server:      %s:%d \n", options.server_ip, options.server_port);
         connected = connect(sockfd, (sockaddr*)&serveraddr, sizeof(serveraddr));
         if (connected != 0) {
-            printf("ERROR: Unable to connect to OUTPUT server\n");
+            printf("ERROR: Unable to connect to OUTPUT server.\n");
         } else {
-            printf("Connect to OUTPUT server\n");
+            printf("Connect to OUTPUT server.\n");
         }
     }
 
@@ -248,7 +249,7 @@ int  main(int argc, char* argv[]) {
         filter.msm.msm7 = true;
     }
 
-    printf("MSM Messages:   ");
+    printf("MSM Messages:      ");
     if (filter.msm.msm4) printf(" MSM4");
     if (filter.msm.msm5) printf(" MSM5");
     if (filter.msm.msm6) printf(" MSM6");
@@ -350,6 +351,7 @@ void assistance_data_callback(LPP_Client*, LPP_Transaction*, LPP_Message* messag
     if (generated_messages.mt1032) printf("1032 ");
     printf("\n");
     if (length > 0) {
+        // Write to file
         if (rtcm_file.is_open()) {
             rtcm_file.write((char*)buffer, length);
             rtcm_file.flush();
@@ -360,6 +362,7 @@ void assistance_data_callback(LPP_Client*, LPP_Transaction*, LPP_Message* messag
             write(device, (char*)buffer, length);
         }
 
+        // Output to server
         if (connected == 0) {
             auto result = write(sockfd, buffer, length);
             if (result == -1) {
