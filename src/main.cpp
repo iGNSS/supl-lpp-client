@@ -30,6 +30,7 @@ static struct option long_options[] = {
     {"server_port", required_argument, NULL, 'o'},
     {"file_output", required_argument, NULL, 'x'},
     {"serial_port", required_argument, NULL, 'd'},
+    {"serial_port_baud_rate", required_argument, NULL, 'r'},
     {"modem_device", required_argument, NULL, 'm'},
     {"modem_baud_rate", required_argument, NULL, 'b'},
     {"ssl", no_argument, NULL, 's'},
@@ -52,6 +53,7 @@ struct Options {
 
     const char*  file_output;
     const char*  serial_port;
+    long serial_port_baud_rate;
     const char*  modem;
     unsigned int modem_baud_rate;
 };
@@ -75,10 +77,11 @@ Options parse_arguments(int argc, char* argv[]) {
     options.modem_baud_rate = 9600;
 
     options.serial_port = "/dev/ttyAMA0";
+    options.serial_port_baud_rate = 38400;
 
     int c;
     int option_index;
-    while ((c = getopt_long(argc, argv, "h:p:sc:n:i:t:y:k:o:x:d:m:b:", long_options, &option_index)) !=
+    while ((c = getopt_long(argc, argv, "h:p:sc:n:i:t:y:k:o:x:d:r:m:b:", long_options, &option_index)) !=
            -1) {
         switch (c) {
         case 'h': options.host = strdup(optarg); break;
@@ -96,6 +99,7 @@ Options parse_arguments(int argc, char* argv[]) {
 
         case 'x': options.file_output = strdup(optarg); break;
         case 'd': options.serial_port = strdup(optarg); break;
+        case 'r': options.serial_port_baud_rate = atoi(optarg); break;
         case 'm': options.modem = strdup(optarg); break;
         case 'b': options.modem_baud_rate = atoi(optarg); break;
         default:
@@ -119,7 +123,9 @@ bool provide_location_information_callback(LocationInformation* location, void* 
 bool provide_ecid_callback(ECIDInformation* ecid, void* userdata);
 void assistance_data_callback(LPP_Client*, LPP_Transaction* transaction, LPP_Message* message,
                               void* userdata);
-int  main(int argc, char* argv[]) {
+speed_t get_baud(long baud);
+
+int main(int argc, char* argv[]) {
     auto options = parse_arguments(argc, argv);
     cell         = CellID{
         .mcc  = options.mcc,
@@ -149,8 +155,17 @@ int  main(int argc, char* argv[]) {
         tios.c_oflag = 0;
         tios.c_lflag = 0;
 
+        // Determine validity of baud rate
+        printf("OUTPUT Baud Rate:   %li\n", options.serial_port_baud_rate);
+
+        // The get_baud function returns a baud rate of 0 for invalid baud rates
+        if (get_baud(options.serial_port_baud_rate) == B0) {
+            printf("ERROR: Invalid baud rate.\n");
+            return 1;
+        }
+
         // Set baud rate
-        cfsetspeed(&tios, B38400);
+        cfsetspeed(&tios, get_baud(options.serial_port_baud_rate));
         tcsetattr(device, TCSAFLUSH, &tios);
 
         // The serial port has a brief glitch once we turn it on which generates a start bit; sleep for 1ms to let it settle
@@ -374,4 +389,47 @@ void assistance_data_callback(LPP_Client*, LPP_Transaction*, LPP_Message* messag
     // Extract SSR data
     printf("SSR LPP Message: %p\n", (void*)message);
 #endif
+}
+
+speed_t get_baud(long baud) {
+switch (baud) {
+    case 50:
+        return B50;
+    case 75:
+        return B75;
+    case 110:
+        return B110;
+    case 134:
+        return B134;
+    case 150:
+        return B150;
+    case 200:
+        return B200;
+    case 300:
+        return B300;
+    case 600:
+        return B600;
+    case 1200:
+        return B1200;
+    case 1800:
+        return B1800;
+    case 2400:
+        return B2400;
+    case 4800:
+        return B4800;
+    case 9600:
+        return B9600;
+    case 19200:
+        return B19200;
+    case 38400:
+        return B38400;
+    case 57600:
+        return B57600;
+    case 115200:
+        return B115200;
+    case 230400:
+        return B230400;
+    default: 
+        return B0;
+    }
 }
