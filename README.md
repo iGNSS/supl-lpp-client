@@ -82,7 +82,7 @@ Client takes the following options
 -k, --server_ip             hostname or IP address for output server, string, defaults to ""
 -o, --server_port           port number for output server, integer, defaults to 3000
 -x, --file_output           file path output, string, defaults to "" (no file output)
--d, --serial_port           serial port path output, string, defaults to "/dev/ttyAMA0"
+-d, --serial_port           serial port path output, string, defaults to "" (no serial_port output)
 -r, --serial_port_baud_rate serial port baud rate, integer, defaults to 38400
 -m, --modem_device          modem device path, string, defaults to "" (no modem connected)
 -b, --modem_baud_rate       modem device baud rate, integer, defaults to 9600

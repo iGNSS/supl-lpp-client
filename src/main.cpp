@@ -76,7 +76,7 @@ Options parse_arguments(int argc, char* argv[]) {
     options.modem           = NULL;
     options.modem_baud_rate = 9600;
 
-    options.serial_port = "/dev/ttyAMA0";
+    options.serial_port = NULL;
     options.serial_port_baud_rate = 38400;
 
     int c;
