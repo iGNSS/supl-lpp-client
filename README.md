@@ -14,8 +14,7 @@ The client is given as an example on how these libraries are used by them self a
 
 ## Table of Contents
 
-- [Getting Started](#getting-started)
-- [Installing](#installing)
+- [Installing](#installation)
 - [Usage](#usage)
 - [License](#license)
 
