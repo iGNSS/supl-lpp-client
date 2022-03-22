@@ -35,9 +35,9 @@ add_subdirectory("libs/lpp")
 add_subdirectory("libs/rtcm_generator")
 
 #
-# Example
+# supl-lpp-client
 #
-project(example VERSION 1.0)
+project(supl-lpp-client VERSION 1.0)
 find_package(Threads REQUIRED)
 
 if(USE_OPENSSL)
@@ -47,27 +47,27 @@ endif()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_executable(example "src/main.cpp")
-target_include_directories(example PRIVATE "${LIBS}/${RTKLIB_INCLUDE_PATH}")
-target_include_directories(example PRIVATE "${LIBS}/${ASNLIB_INCLUDE_PATH}")
-target_include_directories(example PRIVATE "${LIBS}/${LPP_INCLUDE_PATH}")
-target_include_directories(example PRIVATE "${LIBS}/${RTCM_GENERATOR_INCLUDE_PATH}")
-target_include_directories(example PRIVATE "${LIBS}/${MODEM_INCLUDE_PATH}")
-target_include_directories(example PRIVATE "${LIBS}/${SHARED_PATH}")
+add_executable(supl-lpp-client "src/main.cpp")
+target_include_directories(supl-lpp-client PRIVATE "${LIBS}/${RTKLIB_INCLUDE_PATH}")
+target_include_directories(supl-lpp-client PRIVATE "${LIBS}/${ASNLIB_INCLUDE_PATH}")
+target_include_directories(supl-lpp-client PRIVATE "${LIBS}/${LPP_INCLUDE_PATH}")
+target_include_directories(supl-lpp-client PRIVATE "${LIBS}/${RTCM_GENERATOR_INCLUDE_PATH}")
+target_include_directories(supl-lpp-client PRIVATE "${LIBS}/${MODEM_INCLUDE_PATH}")
+target_include_directories(supl-lpp-client PRIVATE "${LIBS}/${SHARED_PATH}")
 
-target_compile_options(example PRIVATE  "-Wall" "-Wextra" "-pedantic" "-Werror" 
+target_compile_options(supl-lpp-client PRIVATE  "-Wall" "-Wextra" "-pedantic" "-Werror" 
                                         "-fvisibility=hidden" "-Wno-missing-field-initializers" 
                                         "-Wformat" "-Wformat-signedness")
-target_compile_options(example PRIVATE "$<$<CONFIG:DEBUG>:${CLIENT_DEBUG_OPTIONS}>")
-target_compile_options(example PRIVATE "$<$<CONFIG:RELEASE>:${CLIENT_RELEASE_OPTIONS}>")
+target_compile_options(supl-lpp-client PRIVATE "$<$<CONFIG:DEBUG>:${CLIENT_DEBUG_OPTIONS}>")
+target_compile_options(supl-lpp-client PRIVATE "$<$<CONFIG:RELEASE>:${CLIENT_RELEASE_OPTIONS}>")
 
 if(USE_ASAN)
-    target_compile_options(example PRIVATE -fsanitize=address)
-    target_link_libraries(example -fsanitize=address)
+    target_compile_options(supl-lpp-client PRIVATE -fsanitize=address)
+    target_link_libraries(supl-lpp-client -fsanitize=address)
 endif()
 
-target_link_libraries(example pthread)
-target_link_libraries(example rtcm_generator)
-target_link_libraries(example lpp)
-target_link_libraries(example modem)
-target_link_libraries(example m)
+target_link_libraries(supl-lpp-client pthread)
+target_link_libraries(supl-lpp-client rtcm_generator)
+target_link_libraries(supl-lpp-client lpp)
+target_link_libraries(supl-lpp-client modem)
+target_link_libraries(supl-lpp-client m)
