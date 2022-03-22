@@ -60,28 +60,13 @@ struct Options {
 
 Options parse_arguments(int argc, char* argv[]) {
     Options options{};
-    options.host     = "129.192.82.208";
-    options.port     = 5431;
+
     options.ssl      = false;
     options.msm_type = -1;
 
-    options.server_ip   = NULL;
-    options.server_port = 3000;
-
-    options.mcc     = 310;
-    options.mnc     = 260;
-    options.tac     = 1;
-    options.cell_id = 3;
-
-    options.modem           = NULL;
-    options.modem_baud_rate = 9600;
-
-    options.serial_port = NULL;
-    options.serial_port_baud_rate = 38400;
-
     int c;
     int option_index;
-    while ((c = getopt_long(argc, argv, "h:p:sc:n:i:t:y:k:o:x:d:r:m:b:", long_options, &option_index)) !=
+    while ((c = getopt_long(argc, argv, ":h:p:sc:n:i:t:y:k:o:x:d:r:m:b:", long_options, &option_index)) !=
            -1) {
         switch (c) {
         case 'h': options.host = strdup(optarg); break;
@@ -102,9 +87,19 @@ Options parse_arguments(int argc, char* argv[]) {
         case 'r': options.serial_port_baud_rate = atoi(optarg); break;
         case 'm': options.modem = strdup(optarg); break;
         case 'b': options.modem_baud_rate = atoi(optarg); break;
+        
+        // Catch invalid and missing options
+        case '?': printf("Invalid option: %c\n", optopt); exit(1);
+        case ':': printf("Missing argument for: %c\n", optopt); exit(1);
         default:
-            abort ();
+            exit(1);
         }
+    }
+
+    // Enforce location server host and port as mandatory
+    if (options.host == 0 || options.port == 0) {
+        printf("--host (-h) and --port (-p) options are mandatory\n");
+        exit(1);
     }
 
     return options;
