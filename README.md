@@ -97,11 +97,15 @@ The resulting RTCM messages can be output in a number of ways:
 
 ### Examples
 
-```console
 Streaming RTCM to device:
+
+```console
 ./supl-lpp-client -h 123.456.78.910 -p 1234 -c 505 -n 2 -t 1 -i 5 -d /dev/ttyAMA0 -r 38400
+```
 
 Save RTCM to file:
+
+```console
 ./supl-lpp-client -h 123.456.78.910 -p 1234 -c 505 -n 2 -t 1 -i 5 -x ~/output/supl-lpp.rtcm
 ```
 
