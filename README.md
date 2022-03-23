@@ -1,6 +1,6 @@
 # SUPL LPP/RTCM Example Client
 
-The SUPL LPP/RTCM client is provided as an example for connecting to Location Server using LPP (Location Positioning Protocol) via the Secure User-Plane Location (SUPL) 2.0 protocol and generating Radio Technical Commission for Maritime Services (RTCM) version 3 corrections for Real-time Kinematic (RTK) positioning.
+The SUPL LPP/RTCM client is provided as an example for connecting to Location Server using LPP (LTE Positioning Protocol) via the Secure User-Plane Location (SUPL) 2.0 protocol and generating Radio Technical Commission for Maritime Services (RTCM) version 3 corrections for Real-time Kinematic (RTK) positioning.
 
 To do this the code includes three libraries:
 
