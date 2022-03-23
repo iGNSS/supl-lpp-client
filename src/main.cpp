@@ -208,6 +208,8 @@ int main(int argc, char* argv[]) {
             printf("Connect to OUTPUT server.\n");
         }
     }
+    // Flush pending printf output
+    fflush(stdout);
 
     // Initialize OpenSSL
     network_initialize();
@@ -369,6 +371,8 @@ void assistance_data_callback(LPP_Client*, LPP_Transaction*, LPP_Message* messag
     if (generated_messages.mt1006) printf("1006 ");
     if (generated_messages.mt1032) printf("1032 ");
     printf("\n");
+    fflush(stdout);
+
     if (length > 0) {
         // Write to file
         if (rtcm_file.is_open()) {
@@ -396,6 +400,8 @@ void assistance_data_callback(LPP_Client*, LPP_Transaction*, LPP_Message* messag
 #else
     // Extract SSR data
     printf("SSR LPP Message: %p\n", (void*)message);
+    fflush(stdout);
+
 #endif
 }
 
