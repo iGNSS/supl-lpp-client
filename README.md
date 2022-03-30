@@ -49,13 +49,21 @@ cd debug
 cmake -DCMAKE_BUILD_TYPE=Debug ../..
 ```
 
-Last step is to build the project. In `build/debug` or `build/release` run the following:
+Build the project. In `build/debug` or `build/release` run the following:
 
 ```console
 make -j8
 ```
 
 With a successful build, the example program executable (`supl-lpp-client`) should be available in the build directory.
+
+### Execution
+
+By default, `make` compiles the source code in the current directory. To make it executable from anywhere, you can either add to `PATH` the current directory or move the binary to `/usr/local/bin` using root privileges.
+
+```console
+sudo cp supl-lpp-client /usr/local/bin
+```
 
 ---
 
