@@ -226,7 +226,7 @@ int main(int argc, char* argv[]) {
     if (!client.connect(options.host, options.port, options.ssl, cell)) {
         printf("ERROR: Connection failed. (%s:%i%s)\n", options.host, options.port,
                options.ssl ? " [ssl]" : "");
-        return 0;
+        return 1;
     }
 
     // Initialize Modem
@@ -235,7 +235,7 @@ int main(int argc, char* argv[]) {
         if (!modem->initialize()) {
             printf("ERROR: Modem connection failed. (device: %s, baud-rate: %u)\n", options.modem,
                    options.modem_baud_rate);
-            return 0;
+            return 1;
         }
     }
 
@@ -291,7 +291,7 @@ int main(int argc, char* argv[]) {
 #endif
     if (request == AD_REQUEST_INVALID) {
         printf("ERROR: Requesting assistance data failed.\n");
-        return 0;
+        return 1;
     }
 
     // Run LPP client
@@ -305,7 +305,7 @@ int main(int argc, char* argv[]) {
         // ProvideLocationInformation messages will send to the server.
         if (!client.process()) {
             printf("ERROR: Client has lost connection.\n");
-            return 0;
+            return 1;
         }
     }
 
